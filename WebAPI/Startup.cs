@@ -1,5 +1,7 @@
 using Business.Abstract;
 using Business.Concrete;
+using Core.DependencyResolvers;
+using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
@@ -54,6 +56,9 @@ namespace WebAPI
             //services.AddSingleton<IUserService, UserManager>();
             //services.AddSingleton<IUserDal, EfUserDal>();
 
+
+            //services.AddCors(options=>options.AddPolicy("AllowOrigin", builder=>builder.WithOrigins("http://localhost:3000")));
+
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -71,7 +76,10 @@ namespace WebAPI
                     };
                 });
 
-            ServiceTool.Create(services);
+
+            services.AddDependencyResolvers(new ICoreModule[] { 
+                new CoreModule()
+            });
 
 
         }
@@ -83,6 +91,8 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //app.UseCors(builder=>builder.WithOrigins("http://localhost:3000").AllowAnyHeader()); //bu sayfadan gelen bütün requestlere izin ver.
 
             app.UseHttpsRedirection();
 
